@@ -7,7 +7,7 @@ This project is a fully configured small office network built in Cisco Packet Tr
 *A visual representation of the SOHO network, including VLANs, IP subnets, and device connections.*
 
 ```
-![Network Diagram](https://github.com/dannyhng/SOHO-Network-Lab/blob/3cbe4c52c0dd9f72a37f93c6d2240d39adf6d9c9/network-diagram.png)
+![Network Diagram](https://raw.githubusercontent.com/dannyhng/SOHO-Network-Lab/main/network-diagram.png)
 
 ```
 
