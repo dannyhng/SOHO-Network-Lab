@@ -7,7 +7,8 @@ This project is a fully configured small office network built in Cisco Packet Tr
 *A visual representation of the SOHO network, including VLANs, IP subnets, and device connections.*
 
 ```
-![Network Diagram](network-diagram.png)
+![Network Diagram](https://github.com/dannyhng/SOHO-Network-Lab/blob/3cbe4c52c0dd9f72a37f93c6d2240d39adf6d9c9/network-diagram.png)
+
 ```
 
 ## Key Features & Technologies Implemented
@@ -42,11 +43,71 @@ This lab demonstrates proficiency in the following areas:
 
 ## Device Configurations
 
-The final running configurations for each device can be found in the `configs/` directory of this repository.
+The full `show running-config` for each device is included below. **Click on a device to expand its configuration.**
 
-* [`R0_Office-Router_config.txt`](configs/R0_Office-Router_config.txt)
-* [`SW1_Switch_config.txt`](configs/SW1_Switch_config.txt)
-* [`R1_ISP-Router_config.txt`](configs/R1_ISP-Router_config.txt)
+<details>
+  <summary> R0 - Office Router</summary>
+  
+  ```cisco
+  !
+  ! Paste the full output of "show running-config" from your Office Router here.
+  !
+  hostname R0
+  !
+  ip dhcp excluded-address 192.168.10.1
+  ip dhcp excluded-address 192.168.20.1
+  ip dhcp excluded-address 192.168.30.1
+  !
+  ip dhcp pool CORP_VLAN
+   network 192.168.10.0 255.255.255.0
+   default-router 192.168.10.1
+   dns-server 8.8.8.8
+  !
+  ip dhcp pool GUEST_VLAN
+   network 192.168.20.0 255.255.255.0
+   default-router 192.168.20.1
+   dns-server 8.8.8.8
+  !
+  ...
+  ```
+</details>
+
+<details>
+  <summary> SW1 - Main Switch</summary>
+  
+  ```cisco
+  !
+  ! Paste the full output of "show running-config" from your Switch here.
+  !
+  hostname SW1
+  !
+  ...
+  interface FastEthernet0/24
+   switchport access vlan 30
+   switchport mode access
+  !
+  interface GigabitEthernet0/1
+   switchport mode trunk
+  !
+  ...
+  ```
+</details>
+
+<details>
+  <summary> R1 - ISP Router</summary>
+
+  ```cisco
+  !
+  ! Paste the full output of "show running-config" from your ISP Router here.
+  !
+  hostname R1
+  !
+  interface GigabitEthernet0/1
+   ip address 10.0.0.2 255.255.255.252
+  !
+  ...
+  ```
+</details>
 
 ## How to Use
 
