@@ -50,24 +50,71 @@ The full `show running-config` for each device is included below. **Click on a d
   
   ```cisco
   !
-  ! Paste the full output of "show running-config" from your Office Router here.
-  !
-  hostname R0
-  !
-  ip dhcp excluded-address 192.168.10.1
-  ip dhcp excluded-address 192.168.20.1
-  ip dhcp excluded-address 192.168.30.1
-  !
-  ip dhcp pool CORP_VLAN
-   network 192.168.10.0 255.255.255.0
-   default-router 192.168.10.1
-   dns-server 8.8.8.8
-  !
-  ip dhcp pool GUEST_VLAN
-   network 192.168.20.0 255.255.255.0
-   default-router 192.168.20.1
-   dns-server 8.8.8.8
-  !
+hostname R0
+!
+!=================================================
+! DHCP Configuration
+!=================================================
+ip dhcp excluded-address 192.168.10.1
+ip dhcp excluded-address 192.168.20.1
+ip dhcp excluded-address 192.168.30.1
+!
+ip dhcp pool CORP_VLAN
+ network 192.168.10.0 255.255.255.0
+ default-router 192.168.10.1
+ dns-server 8.8.8.8
+!
+ip dhcp pool GUEST_VLAN
+ network 192.168.20.0 255.255.255.0
+ default-router 192.168.20.1
+ dns-server 8.8.8.8
+!
+!=================================================
+! Interface Configuration
+!=================================================
+interface GigabitEthernet0/0
+ description Trunk Link to SW1
+ no ip address
+ ip nat inside
+!
+interface GigabitEthernet0/0.10
+ description Gateway for CORP VLAN
+ encapsulation dot1Q 10
+ ip address 192.168.10.1 255.255.255.0
+!
+interface GigabitEthernet0/0.20
+ description Gateway for GUEST VLAN
+ encapsulation dot1Q 20
+ ip address 192.168.20.1 255.255.255.0
+!
+interface GigabitEthernet0/0.30
+ description Gateway for SERVERS VLAN
+ encapsulation dot1Q 30
+ ip address 192.168.30.1 255.255.255.0
+!
+interface GigabitEthernet0/1
+ description WAN Link to ISP
+ ip address 10.0.0.1 255.255.255.252
+ ip nat outside
+!
+!=================================================
+! NAT and Routing Configuration
+!=================================================
+ip nat inside source list 1 interface GigabitEthernet0/1 overload
+ip route 0.0.0.0 0.0.0.0 10.0.0.2
+!
+access-list 1 permit 192.168.10.0 0.0.0.255
+access-list 1 permit 192.168.20.0 0.0.0.255
+access-list 1 permit 192.168.30.0 0.0.0.255
+!
+line con 0
+ password cisco
+ login
+line vty 0 4
+ password cisco
+ login
+!
+end
   ...
   ```
 </details>
@@ -77,18 +124,51 @@ The full `show running-config` for each device is included below. **Click on a d
   
   ```cisco
   !
-  ! Paste the full output of "show running-config" from your Switch here.
-  !
-  hostname SW1
-  !
-  ...
-  interface FastEthernet0/24
-   switchport access vlan 30
-   switchport mode access
-  !
-  interface GigabitEthernet0/1
-   switchport mode trunk
-  !
+hostname SW1
+!
+!=================================================
+! VLAN Database
+!=================================================
+vlan 10
+ name CORP
+!
+vlan 20
+ name GUEST
+!
+vlan 30
+ name SERVERS
+!
+!=================================================
+! Interface Configuration
+!=================================================
+!
+! --- Access Ports for CORP VLAN ---
+interface range FastEthernet0/1 - 10
+ switchport mode access
+ switchport access vlan 10
+!
+! --- Access Ports for GUEST VLAN ---
+interface range FastEthernet0/11 - 20
+ switchport mode access
+ switchport access vlan 20
+!
+! --- Access Port for SERVER VLAN ---
+interface FastEthernet0/24
+ switchport mode access
+ switchport access vlan 30
+!
+! --- Trunk Port to Office Router ---
+interface GigabitEthernet0/1
+ switchport mode trunk
+!
+line con 0
+ password cisco
+ login
+line vty 0 15
+ password cisco
+ login
+!
+end
   ...
   ```
 </details>
@@ -98,13 +178,26 @@ The full `show running-config` for each device is included below. **Click on a d
 
   ```cisco
   !
-  ! Paste the full output of "show running-config" from your ISP Router here.
-  !
-  hostname R1
-  !
-  interface GigabitEthernet0/1
-   ip address 10.0.0.2 255.255.255.252
-  !
+hostname R1
+!
+!=================================================
+! Interface Configuration
+!=================================================
+!
+! --- Link to Office Router ---
+interface GigabitEthernet0/1
+ description WAN Link from Customer R0
+ ip address 10.0.0.2 255.255.255.252
+ no shutdown
+!
+line con 0
+ password cisco
+ login
+line vty 0 4
+ password cisco
+ login
+!
+end
   ...
   ```
 </details>
